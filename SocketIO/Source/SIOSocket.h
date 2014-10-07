@@ -7,12 +7,21 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <JavaScriptCore/JavaScriptCore.h>
+
+#ifdef __IPHONE_8_0
+#import <WebKit/WebKit.h>
+#endif
+
 
 @interface SIOSocket : NSObject
 
 // Generators
 + (void)socketWithHost:(NSString *)hostURL response:(void(^)(SIOSocket *socket))response;
 + (void)socketWithHost:(NSString *)hostURL reconnectAutomatically:(BOOL)reconnectAutomatically attemptLimit:(NSInteger)attempts withDelay:(NSTimeInterval)reconnectionDelay maximumDelay:(NSTimeInterval)maximumDelay timeout:(NSTimeInterval)timeout response:(void(^)(SIOSocket *socket))response;
+
+
+@property (nonatomic,strong) JSContext *javascriptContext;
 
 // Event responders
 @property (nonatomic, copy) void (^onConnect)();
@@ -23,10 +32,12 @@
 @property (nonatomic, copy) void (^onReconnectionAttempt)(NSInteger numberOfAttempts);
 @property (nonatomic, copy) void (^onReconnectionError)(NSDictionary *errorInfo);
 
+
 - (void)on:(NSString *)event callback:(void (^)(id data))function;
 
 // Emitters
-- (void)emit:(NSString *)event, ... NS_REQUIRES_NIL_TERMINATION;
+- (void)emit:(NSArray *)events;
+- (void)emit:(NSString *)event payload:(id)payload callback:(void (^)(id, NSError *))function;
 
 - (void)close;
 
