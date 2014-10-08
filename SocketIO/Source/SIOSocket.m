@@ -7,10 +7,7 @@
 //
 
 #import "SIOSocket.h"
-
 #import "socket.io.js.h"
-
-#import "NSDictionary+JSON.h"
 
 @interface SIOSocket ()
 
@@ -148,14 +145,14 @@
     [self.javascriptContext evaluateScript: [NSString stringWithFormat: @"objc_socket.emit(%@);", [arguments componentsJoinedByString: @", "]]];
 }
 
-- (void)emit:(NSString *)event payload:(NSDictionary *)payload callback:(void (^)(id, NSError *))function{
+- (void)emit:(NSString *)event payload:(NSDictionary *)payload callback:(void (^)(id, id))function{
 
     self.javascriptContext[callbackFunctionName(event)] = function;
     NSString *javascriptLine = nil;
     if (!payload) {
-        javascriptLine = [NSString stringWithFormat: @"objc_socket.emit('%@', function(err, data){   %@(data,err);  });", event, callbackFunctionName(event)];
+        javascriptLine = [NSString stringWithFormat: @"objc_socket.emit('%@', function(err, data){ %@(data,err);  });", event, callbackFunctionName(event)];
     } else {
-        javascriptLine = [NSString stringWithFormat: @"objc_socket.emit('%@', %@, function(err, data){   %@(data,err);  });", event, [payload JSONString], callbackFunctionName(event)];
+        javascriptLine = [NSString stringWithFormat: @"objc_socket.emit('%@', %@, function(err, data){  %@(data,err);  });", event, jsonString(payload), callbackFunctionName(event)];
     }
     
     [self.javascriptContext evaluateScript:javascriptLine];
@@ -170,10 +167,24 @@
 }
 
 
+
+
 NSString *callbackFunctionName(NSString *event) {
     NSString *x = [NSString stringWithFormat:@"objc_%@",[event stringByReplacingOccurrencesOfString:@"." withString:@"__"]];
     return x;
 }
 
+NSString *jsonString(NSDictionary *dict){
+    
+    NSError *error;
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:dict options:0 error:&error];
+    
+    if (jsonData) {
+        return [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+    } else {
+        NSLog(@"JSONString error: %@", error.localizedDescription);
+        return @"{}";
+    }
+}
 
 @end

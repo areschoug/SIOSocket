@@ -21,7 +21,7 @@
 + (void)socketWithHost:(NSString *)hostURL reconnectAutomatically:(BOOL)reconnectAutomatically attemptLimit:(NSInteger)attempts withDelay:(NSTimeInterval)reconnectionDelay maximumDelay:(NSTimeInterval)maximumDelay timeout:(NSTimeInterval)timeout response:(void(^)(SIOSocket *socket))response;
 
 
-@property (nonatomic,strong) JSContext *javascriptContext;
+@property (readonly) JSContext *javascriptContext;
 
 // Event responders
 @property (nonatomic, copy) void (^onConnect)();
@@ -37,7 +37,7 @@
 
 // Emitters
 - (void)emit:(NSArray *)events;
-- (void)emit:(NSString *)event payload:(id)payload callback:(void (^)(id, NSError *))function;
+- (void)emit:(NSString *)event payload:(id)payload callback:(void (^)(id, id))function;
 
 - (void)close;
 
