@@ -128,10 +128,13 @@
 }
 
 // Event listeners
-- (void)on:(NSString *)event callback:(void (^)(id))function
+- (void)on:(NSString *)event callback:(void (^)(id, id))function
 {
     self.javascriptContext[callbackFunctionName(event)] = function;
-    [self.javascriptContext evaluateScript: [NSString stringWithFormat: @"objc_socket.on('%@', objc_%@);", event, event]];
+    NSString *js =  [NSString stringWithFormat: @"objc_socket.on('%@', function(err, data){ %@(data, err);  });", event, callbackFunctionName(event)];
+    js =            [NSString stringWithFormat: @"objc_socket.on('%@', function(err, data){ %@(data, err);  });", event, callbackFunctionName(event)];
+    NSLog(@"%@",js);
+    [self.javascriptContext evaluateScript:js];
 }
 
 // Emitters
@@ -150,9 +153,9 @@
     self.javascriptContext[callbackFunctionName(event)] = function;
     NSString *javascriptLine = nil;
     if (!payload) {
-        javascriptLine = [NSString stringWithFormat: @"objc_socket.emit('%@', function(err, data){ %@(data,err);  });", event, callbackFunctionName(event)];
+        javascriptLine = [NSString stringWithFormat: @"objc_socket.emit('%@', function(err, data){ %@(data, err);  });", event, callbackFunctionName(event)];
     } else {
-        javascriptLine = [NSString stringWithFormat: @"objc_socket.emit('%@', %@, function(err, data){  %@(data,err);  });", event, jsonString(payload), callbackFunctionName(event)];
+        javascriptLine = [NSString stringWithFormat: @"objc_socket.emit('%@', %@, function(err, data){  %@(data, err);  });", event, jsonString(payload), callbackFunctionName(event)];
     }
     
     [self.javascriptContext evaluateScript:javascriptLine];

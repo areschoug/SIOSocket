@@ -33,7 +33,7 @@
 @property (nonatomic, copy) void (^onReconnectionError)(NSDictionary *errorInfo);
 
 
-- (void)on:(NSString *)event callback:(void (^)(id data))function;
+- (void)on:(NSString *)event callback:(void (^)(id, id))function;
 
 // Emitters
 - (void)emit:(NSArray *)events;
