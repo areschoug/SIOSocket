@@ -137,6 +137,13 @@
     [self.javascriptContext evaluateScript:js];
 }
 
+- (void)off:(NSString *)event
+{
+//    self.javascriptContext[callbackFunctionName(event)] = nil;
+//    NSString *js =  [NSString stringWithFormat: @"objc_socket.removeListener('%@');", event];
+//    [self.javascriptContext evaluateScript:js];
+}
+
 // Emitters
 - (void)emit:(NSArray *)events {
     NSMutableArray *arguments = [NSMutableArray array];

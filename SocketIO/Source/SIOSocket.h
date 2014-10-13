@@ -34,6 +34,7 @@
 
 
 - (void)on:(NSString *)event callback:(void (^)(id, id))function;
+- (void)off:(NSString *)event;
 
 // Emitters
 - (void)emit:(NSArray *)events;
